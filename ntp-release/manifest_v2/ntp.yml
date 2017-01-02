@@ -1,0 +1,42 @@
+---
+name: ntp-server
+director_uuid: fb70f16a-4d6f-41f8-bc2e-0181a03dff18
+releases:
+- {name: ntp, version: latest} 
+
+stemcells:
+- alias: ubuntu-latest
+  os: ubuntu-trusty
+  version: latest
+
+update:
+  canaries: 1
+  max_in_flight: 2
+  serial: false
+  canary_watch_time: 30000 - 600000
+  update_watch_time: 30000 - 600000
+
+instance_groups:
+- name: ntp-server
+  instances: 1
+  azs: [z1, z2]
+  jobs:
+  - name: ntpd
+    release: ntp
+    properties:
+      ntp_conf: |
+        server 0.us.pool.ntp.org
+        server 1.us.pool.ntp.org
+        server 2.us.pool.ntp.org
+        restrict default kod nomodify notrap nopeer noquery
+        restrict -6 default kod nomodify notrap nopeer noquery
+        restrict 127.0.0.0 mask 255.0.0.0
+        restrict -6 ::1
+
+  vm_type: default_vm_types
+  stemcell: ubuntu-latest
+  persistent_disk_type: default_disk_types
+  networks:
+  - name: default_networks
+    static_ips:
+    - 10.244.0.34

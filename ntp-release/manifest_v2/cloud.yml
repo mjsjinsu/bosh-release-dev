@@ -1,0 +1,35 @@
+azs:
+- name: z1
+  cloud_properties:
+    availability_zone: zone1
+- name: z2
+  cloud_properties:
+    availability_zone: zone2
+
+vm_types:
+- name: default_vm_types
+  cloud_properties: {}
+
+disk_types:
+- name: default_disk_types
+  disk_size: 1024
+
+compilation:
+  workers: 3
+  az: z1
+  reuse_compilation_vms: false
+  vm_type: default_vm_types
+  network: default_networks
+
+networks:
+- name: default_networks
+  type: manual
+  subnets:
+  - azs: [z1, z2]
+    range: 10.244.0.0/24
+    gateway: 10.244.0.1
+    reserved: [10.244.0.1]
+    dns:
+      - 8.8.8.8
+    static: [10.244.0.34]
+    cloud_properties: {}
